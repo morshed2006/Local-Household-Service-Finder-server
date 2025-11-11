@@ -1,14 +1,4 @@
-const express = require('express')
-const cors = require('cors')
-const admin = require("firebase-admin");
-const serviceAccount = require("./serviceKey.json");
-const app = express()
-require("dotenv").config()
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-const { verifyToken } = require('./middleware/authMiddleware');
-const port = 5000
-app.use(cors())
-app.use(express.json())
+
 
 
 admin.initializeApp({
