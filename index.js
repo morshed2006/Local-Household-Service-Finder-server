@@ -43,7 +43,23 @@ async function run() {
       }
     })
 
-    
+    // Get single service by ID
+    app.get('/cleaner/:id',  async (req, res) => {
+      try {
+        const id = req.params.id
+        const query = { _id: new ObjectId(id) }
+        const result = await cleanerCollection.findOne(query)
+        
+        if (!result) {
+          return res.status(404).send({ error: 'Service not found' })
+        }
+        
+        res.send(result)
+      } catch (error) {
+        res.status(500).send({ error: 'Failed to fetch service' })
+      }
+    })
+
     // Create new service
     app.post('/cleaner',  async (req, res) => {
       try {
