@@ -11,25 +11,39 @@ app.use(cors())
 app.use(express.json())
 
 
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
 
 
-    // Get single service by ID
-    app.get('/cleaner/:id',  async (req, res) => {
+const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.9ay2t5q.mongodb.net/?appName=Cluster0`;
+
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
+});
+
+async function run() {
+  try {
+    await client.connect();
+    
+    const db = client.db('cleaner-db')
+    const cleanerCollection = db.collection('cleaner')
+
+    // Get all services
+    app.get('/cleaner', async (req, res) => {
       try {
-        const id = req.params.id
-        const query = { _id: new ObjectId(id) }
-        const result = await cleanerCollection.findOne(query)
-        
-        if (!result) {
-          return res.status(404).send({ error: 'Service not found' })
-        }
-        
+        const result = await cleanerCollection.find().toArray()
         res.send(result)
       } catch (error) {
-        res.status(500).send({ error: 'Failed to fetch service' })
+        res.status(500).send({ error: 'Failed to fetch services' })
       }
     })
 
+    
     // Create new service
     app.post('/cleaner',  async (req, res) => {
       try {
